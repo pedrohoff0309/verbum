@@ -53,6 +53,13 @@ function Skeleton() {
 // ─── Componente principal ────────────────────────────────────────────────────
 
 export default function PublicPage() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
+  useEffect(() => {
+    const handle = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handle)
+    return () => window.removeEventListener('resize', handle)
+  }, [])
+
   // ── URL param ?data=YYYY-MM-DD ─────────────────────────────────────────────────
   const [searchParams] = useSearchParams()
   const dataParam = searchParams.get('data') // 'YYYY-MM-DD' ou null
@@ -136,7 +143,7 @@ export default function PublicPage() {
   const container: React.CSSProperties = {
     maxWidth: '680px',
     margin: '0 auto',
-    padding: '0 24px',
+    padding: isMobile ? '0 16px' : '0 24px',
   }
 
   const labelStyle: React.CSSProperties = {
@@ -174,39 +181,54 @@ export default function PublicPage() {
       }}
     >
       {/* ── HEADER ───────────────────────────────────────────────────────── */}
-      <header style={{ borderBottom: '1px solid #E8DFD0', overflow: 'visible', height: '80px', boxSizing: 'border-box' }}>
+      <header style={{ background: '#F5F0E8', borderBottom: isMobile ? 'none' : '1px solid #E8DFD0', overflow: 'visible', height: isMobile ? '140px' : '80px', boxSizing: 'border-box' }}>
         <div
           style={{
             ...container,
             display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
             alignItems: 'center',
-            justifyContent: 'space-between',
+            justifyContent: isMobile ? 'center' : 'space-between',
             height: '100%',
             position: 'relative',
           }}
         >
           {/* Lado esquerdo: espaço para balancear flex */}
-          <div style={{ width: '100px' }} />
+          <div style={{ width: '100px', display: isMobile ? 'none' : 'block' }} />
 
           {/* Centro: logo centralizado absolutamente */}
           <div
             style={{
-              position: 'absolute',
-              left: '50%',
-              transform: 'translateX(-50%)',
+              position: isMobile ? 'static' : 'absolute',
+              left: isMobile ? 'auto' : '50%',
+              transform: isMobile ? 'none' : 'translateX(-50%)',
+              margin: isMobile ? '0 auto' : '0',
             }}
           >
             <img
               src="/logo_verbum (3) (1).png"
               alt="Logo Verbum"
               style={{
-                height: '210px',
+                height: isMobile ? '180px' : '170px',
                 width: 'auto',
                 display: 'block',
                 position: 'relative',
-                bottom: '-65px',
+                bottom: isMobile ? '-45px' : '-40px',
               }}
             />
+            {isMobile && (
+              <span style={{
+                fontSize: '12px',
+                color: '#8C7B6B',
+                fontFamily: '"DM Sans", sans-serif',
+                marginTop: '8px',
+                display: 'block',
+                textAlign: 'center',
+                width: '100%'
+              }}>
+                {formatarData(hoje)}
+              </span>
+            )}
           </div>
 
           <span
@@ -214,6 +236,7 @@ export default function PublicPage() {
               fontSize: '13px',
               color: '#8C7B6B',
               fontFamily: '"DM Sans", sans-serif',
+              display: isMobile ? 'none' : 'inline',
             }}
           >
             {formatarData(hoje)}
@@ -231,6 +254,7 @@ export default function PublicPage() {
             justifyContent: 'space-between',
             alignItems: 'center',
             marginBottom: '28px',
+            marginTop: isMobile ? '16px' : '0',
           }}
         >
           <Link
@@ -294,7 +318,8 @@ export default function PublicPage() {
                 <div style={{ marginBottom: '20px' }}>
                   <span
                     style={{
-                      display: 'inline-flex',
+                      display: isMobile ? 'flex' : 'inline-flex',
+                      justifyContent: isMobile ? 'center' : undefined,
                       alignItems: 'center',
                       gap: '6px',
                       background: corLight,
@@ -327,10 +352,11 @@ export default function PublicPage() {
             <h1
               style={{
                 ...displayFont,
-                fontSize: 'clamp(26px, 5vw, 34px)',
+                fontSize: isMobile ? 'clamp(28px, 7vw, 36px)' : 'clamp(26px, 5vw, 34px)',
                 fontWeight: 500,
                 lineHeight: 1.25,
                 margin: '0 0 8px',
+                textAlign: isMobile ? 'center' : 'left',
                 color: leitura?.tempo_liturgico ? getCorLiturgica(leitura.tempo_liturgico) : '#2C1A0E',
               }}
             >
@@ -355,11 +381,12 @@ export default function PublicPage() {
             {/* Linha decorativa litúrgica */}
             <div
               style={{
-                width: '36px',
-                height: '2px',
+                width: isMobile ? '60px' : '36px',
+                height: isMobile ? '3px' : '2px',
                 background: leitura?.tempo_liturgico ? getCorLiturgica(leitura.tempo_liturgico) : '#C0622A',
                 marginBottom: '32px',
                 marginTop: leitura?.referencias ? '0' : '24px',
+                margin: isMobile ? '0 auto 32px' : undefined,
               }}
             />
           </section>
@@ -455,6 +482,7 @@ export default function PublicPage() {
         <div
           style={{
             display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
             gap: '10px',
             marginBottom: '48px',
           }}
@@ -469,6 +497,8 @@ export default function PublicPage() {
             style={{
               display: 'inline-flex',
               alignItems: 'center',
+              justifyContent: 'center',
+              width: isMobile ? '100%' : 'auto',
               gap: '6px',
               padding: '7px 14px',
               border: '1px solid #C0622A',
@@ -502,6 +532,8 @@ export default function PublicPage() {
             style={{
               display: 'inline-flex',
               alignItems: 'center',
+              justifyContent: 'center',
+              width: isMobile ? '100%' : 'auto',
               gap: '6px',
               padding: '7px 14px',
               border: '1px solid #C0622A',
@@ -530,7 +562,7 @@ export default function PublicPage() {
         </div>
 
         {/* ── SEÇÃO LEITURAS (ABAS) ──────────────────────────────────────── */}
-        <section style={{ marginBottom: '0' }}>
+        <section style={{ marginBottom: '0px' }}>
           <p style={labelStyle}>Leituras do dia</p>
 
           {/* Abas */}
@@ -538,7 +570,7 @@ export default function PublicPage() {
             style={{
               display: 'flex',
               borderBottom: '1px solid #E8DFD0',
-              marginBottom: '24px',
+              marginBottom: isMobile ? '32px' : '24px',
               gap: '4px',
             }}
           >
@@ -785,16 +817,19 @@ export default function PublicPage() {
           style={{
             ...container,
             display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
             alignItems: 'center',
-            justifyContent: 'space-between',
-            paddingTop: '28px',
-            paddingBottom: '28px',
+            justifyContent: isMobile ? 'center' : 'space-between',
+            gap: isMobile ? '8px' : '0',
+            textAlign: isMobile ? 'center' : undefined,
+            paddingTop: isMobile ? '48px' : '28px',
+            paddingBottom: isMobile ? '48px' : '28px',
           }}
         >
           <span
             style={{
               ...displayFont,
-              fontSize: '3rem',
+              fontSize: isMobile ? '2rem' : '3rem',
               fontWeight: 600,
               fontVariant: 'small-caps',
               letterSpacing: '0.3em',
